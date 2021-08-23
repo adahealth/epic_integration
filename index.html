@@ -584,11 +584,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_overview_of_the_integration">Overview of the integration</a></li>
 <li><a href="#_integration_of_the_symptom_assessment_application">Integration of the symptom assessment application</a></li>
-<li><a href="#_integration_of_the_assessment_report_application">Integration of the assessment report application</a></li>
-<li><a href="#_assessment_report_webview_for_physicians">Assessment report WebView for physicians</a>
+<li><a href="#_integration_of_the_assessment_report_application_webview">Integration of the assessment report application (WebView)</a>
 <ul class="sectlevel2">
-<li><a href="#_dashboard_view">Dashboard view</a></li>
-<li><a href="#_report_view">Report view</a></li>
+<li><a href="#_assessment_report_webview_for_physicians">Assessment report WebView for physicians</a></li>
 </ul>
 </li>
 </ul>
@@ -615,12 +613,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>The app is launched from the MyRecord section of the menu in MyChart. The partner should be able to produce/obtain a valid launch ID that can be exchanged for an authorization code by the Epic Authz server. The patient name, date of birth, biological sex and risk-factor-related observations and conditions, if present, are retrieved from the Epic FHIR server and used as onboarding data required for starting off the assessment.</p>
+<p>The app is launched from the MyRecord section of the menu in MyChart, or the partner&#8217;s custom patient portal. The partner should be able to produce/obtain a valid launch ID that can be exchanged for an authorization code by the Epic Authz server. This exchange is carried out by the Ada-ID service. The Authz server redirects with the code and state parameters to the assessment app which in turn sends the parameters to the Ada-ID app in order to obtain an internal JWS token. At different points during the patient onboarding the assessment app can use the internal token to obtain information about the patient from the Ada-ID service, which retrieves it from the Epic FHIR server. This information includes the patient name, date of birth, biological sex and risk-factor-related observations and conditions.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_integration_of_the_assessment_report_application">Integration of the assessment report application</h2>
+<h2 id="_integration_of_the_assessment_report_application_webview">Integration of the assessment report application (WebView)</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>An overview of assessment report app integration can be seen in the following diagram:</p>
@@ -630,15 +628,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <img src="images/epic-hcp-client-facing-flow.png" alt="hcp epic sequence diagram">
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_assessment_report_webview_for_physicians">Assessment report WebView for physicians</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_dashboard_view">Dashboard view</h3>
 <div class="paragraph">
-<p>When a health-care professional launches the report app from Hyperspace from within the healthcare record context of a particular patient, the first screen they&#8217;re shown is the dashboard view - a full list of assessments the patient has carried out, along with the patient demographics, name and the patient ID. A sample dashboard view can be seen here:</p>
+<p>Upon launch, Hyperspace provides a launch ID, which is exchanged for the authorization code and state parameters by the Authz server through the Ada-ID service. The Authz server redirects with the code and state parameters to the report app which in turn sends the parameters to the Ada-ID app in order to obtain an internal JWS token. The Ada-ID app constructs the internal token based on the token response it gets from the Authz server. The internal token contents include the patient ID from the launch context and the expiration time. If the internal token is not past its expiry, the assessment report app displays reports for a particular patient, based on the token&#8217;s patient ID field.</p>
+</div>
+<div class="sect2">
+<h3 id="_assessment_report_webview_for_physicians">Assessment report WebView for physicians</h3>
+<div class="sect3">
+<h4 id="_dashboard_view">Dashboard view</h4>
+<div class="paragraph">
+<p>When a health-care professional launches the report app in Hyperspace from within the healthcare record context of a particular patient, the first screen they&#8217;re shown is the dashboard view - a full list of assessments the patient has carried out, along with the patient demographics, name and the patient ID. A sample dashboard view can be seen here:</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -646,46 +644,35 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_report_view">Report view</h3>
+<div class="sect3">
+<h4 id="_report_view">Report view</h4>
 <div class="paragraph">
 <p>Clicking on one of the items in the report list leads to a view of the full assessment report, with the patient demographics, relevant risk factors, primary complaints, present and absent findings, suggested conditions and a transcript of the dialogue with Ada.</p>
-</div>
-<div class="paragraph">
-<p>Report view part 1:</p>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/report_view_1.png" alt="individual hcp report view part 1">
 </div>
 </div>
-<div class="paragraph">
-<p>Report view part 2:</p>
-</div>
+<hr>
 <div class="imageblock">
 <div class="content">
 <img src="images/report_view_2.png" alt="individual hcp report view part 2">
 </div>
 </div>
-<div class="paragraph">
-<p>Report view part 3:</p>
-</div>
+<hr>
 <div class="imageblock">
 <div class="content">
 <img src="images/report_view_3.png" alt="individual hcp report view part 3">
 </div>
 </div>
-<div class="paragraph">
-<p>Report view part 4:</p>
-</div>
+<hr>
 <div class="imageblock">
 <div class="content">
 <img src="images/report_view_4.png" alt="individual hcp report view part 4">
 </div>
 </div>
-<div class="paragraph">
-<p>Report view part 5:</p>
-</div>
+<hr>
 <div class="imageblock">
 <div class="content">
 <img src="images/report_view_5.png" alt="individual hcp report view part 5">
@@ -698,10 +685,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.0<br>
-Last updated 2021-08-22 18:11:01 UTC
+Last updated 2021-08-23 10:22:39 UTC
 </div>
 </div>
 <div class="custom-footer">
