@@ -582,11 +582,17 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_overview_of_the_integration">Overview of the integration</a></li>
-<li><a href="#_integration_of_the_symptom_assessment_application">Integration of the symptom assessment application</a></li>
-<li><a href="#_integration_of_the_assessment_report_application_webview">Integration of the assessment report application (WebView)</a>
-<ul class="sectlevel2">
-<li><a href="#_assessment_report_webview_for_physicians">Assessment report WebView for physicians</a></li>
+<li><a href="#_overview_of_the_integration">1. Overview of the integration</a></li>
+<li><a href="#_integration_of_the_symptom_assessment_module">2. Integration of the symptom assessment module</a>
+<ul class="sectlevel3">
+<li><a href="#_fhir_resources">2.1. FHIR resources</a></li>
+<li><a href="#_returning_users">2.2. Returning users</a></li>
+</ul>
+</li>
+<li><a href="#_integration_of_the_assessment_report_module_for_healthcare_professionals">3. Integration of the assessment report module for healthcare professionals</a>
+<ul class="sectlevel3">
+<li><a href="#_dashboard_view">3.1. Dashboard view</a></li>
+<li><a href="#_report_view">3.2. Report view</a></li>
 </ul>
 </li>
 </ul>
@@ -594,34 +600,117 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_overview_of_the_integration">Overview of the integration</h2>
+<h2 id="_overview_of_the_integration">1. Overview of the integration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Ada&#8217;s apps can be integrated with EPIC EHR provider&#8217;s patient and provider facing platforms. On the patient-facing side, the Ada symptom assessment app can be launched within the MyChart patient portal. On the provider-facing side, the assessment report can be launched within Hyperspace.</p>
+<p>Ada currently offers the integration of two different modules with the EPIC EHR provider. Those are:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The patient-facing Ada symptom assessment module, which is in addition offered as a mobile and web application, and can be integrated with Epic&#8217;s MyChart patient portal</p>
+</li>
+<li>
+<p>The clinician-facing assessment report module, which can be launched within Epic&#8217;s Hyperspace/Hyperdrive</p>
+</li>
+</ol>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_integration_of_the_symptom_assessment_application">Integration of the symptom assessment application</h2>
+<h2 id="_integration_of_the_symptom_assessment_module">2. Integration of the symptom assessment module</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>An overview of the symptom assessment app integration can be seen in the following diagram:</p>
+<p>The protocol followed for the symptom assessment module integration (single sign-on) is SMART on FHIR with OpenID Connect. An overview of the integration can be seen in the following diagram:</p>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="images/epic-assess-client-facing-flow.png" alt="assess epic sequence diagram">
 </div>
 </div>
+<details>
+<summary class="title">Click to see the token response in detail</summary>
+<div class="content">
 <div class="paragraph">
-<p>The app is launched from the MyRecord section of the menu in MyChart, or the partner&#8217;s custom patient portal. The partner should be able to produce/obtain a valid launch ID that can be exchanged for an authorization code by the Epic Authz server. This exchange is carried out by the Ada-ID service. The Authz server redirects with the code and state parameters to the assessment app which in turn sends the parameters to the Ada-ID app in order to obtain an internal JWS token. At different points during the patient onboarding the assessment app can use the internal token to obtain information about the patient from the Ada-ID service, which retrieves it from the Epic FHIR server. This information includes the patient name, date of birth, biological sex and risk-factor-related observations and conditions.</p>
+<p>Sample obtained by launching with SMART Health IT - <a href="https://launch.smarthealthit.org" class="bare">https://launch.smarthealthit.org</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>{
+  "accessToken": {
+    "tokenValue": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuZWVkX3BhdGllbnRfYmFubmVyIjpmYWxzZSwic21hcnRfc3R5bGVfdXJsIjoiaHR0cHM6Ly9sYXVuY2guc21hcnRoZWFsdGhpdC5vcmcvc21hcnQtc3R5bGUuanNvbiIsInBhdGllbnQiOiI4N2EzMzlkMC04Y2FlLTQxOGUtODljNy04NjUxZTZhYWIzYzYiLCJlbmNvdW50ZXIiOiI0MThlMzhjZi05ZGE2LTQxNTUtYjIwNS0wYmUyNDAyNGIxZGIiLCJ0b2tlbl90eXBlIjoiYmVhcmVyIiwic2NvcGUiOiJsYXVuY2ggb3BlbmlkIGZoaXJVc2VyIFBhdGllbnQuUmVhZCBDb25kaXRpb24uU2VhcmNoIE9ic2VydmF0aW9uLlNlYXJjaCIsImNsaWVudF9pZCI6IkFueSIsImV4cGlyZXNfaW4iOjM2MDAsImlkX3Rva2VuIjoiZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SndjbTltYVd4bElqb2lVR0YwYVdWdWRDODROMkV6TXpsa01DMDRZMkZsTFRReE9HVXRPRGxqTnkwNE5qVXhaVFpoWVdJell6WWlMQ0ptYUdseVZYTmxjaUk2SWxCaGRHbGxiblF2T0RkaE16TTVaREF0T0dOaFpTMDBNVGhsTFRnNVl6Y3RPRFkxTVdVMllXRmlNMk0ySWl3aVlYVmtJam9pUVc1NUlpd2ljM1ZpSWpvaVpqVmhaV1F3WlRneVptTTBZMlprT1Raa01ESTNObUl3WmpGaU1qaGlZVFF4Wm1OaFlqUmhPRFUzTURZMk9EaGxPRFl6TlRObFl6QmhNakUwTnpNd05TSXNJbWx6Y3lJNkltaDBkSEJ6T2k4dmJHRjFibU5vTG5OdFlYSjBhR1ZoYkhSb2FYUXViM0puTDNZdmNqUXZabWhwY2lJc0ltbGhkQ0k2TVRZek5ESTVNVGsyTlN3aVpYaHdJam94TmpNME1qazFOVFkxZlEuTDlDMG0zNE5WT21nRUZwT3N6M1BHTzNuenpaeWdCT3ZDcm9QMkpPdm5NTFU4OEtnSjk5eTVFdXZEN0FacnFqd3pXRzItNE5wRjhDSi05RkM4YkJJdzQwbzUtVVJ5SWs0WHBZejhyNUZOQ2Y4RFA4T2g5V1VXSFlqb0poWWtJeHBsVmREWm5UY0NaQzZrOS1KaTJEaDdTdl9TSi1say1kNUMyNFY2WXNnUVQ2dkFKNWN3d3ZPaVNYbGgyRDB4a0ZPR2Myc1lEd2IzU1dmTEQ3MDRSeFdCSHpMXzN3aGtkZjdFVExla3dZOEl0QjI2c1p6Q0tTZDFLODZrYmNJVzhfNGsxeFgwakxXZDZzVFQ3Wmd2bzFhOEFXYXlnM1IyakpGZnhKM1M0RjZJenh2UmhFMzhfbjdqeXgyMURPb1cxandSd3VORGtWaUdlN2JSWHBNVWxBZ1dRIiwiaWF0IjoxNjM0MjkxOTY1LCJleHAiOjE2MzQyOTU1NjV9.PilsOmKa2S-rCGv2lG0MpJRkpZUeyZIIckNwGe8bWno",
+    "issuedAt": "2021-10-15T09:59:25.599887Z",
+    "expiresAt": "2021-10-15T10:59:25.599887Z",
+    "tokenType": {
+      "value": "Bearer"
+    },
+    "scopes": [
+      "openid",
+      "Patient.Read",
+      "Condition.Search",
+      "launch",
+      "fhirUser",
+      "Observation.Search"
+    ]
+  },
+  "refreshToken": null,
+  "additionalParameters": {
+    "patient": "87a339d0-8cae-418e-89c7-8651e6aab3c6",
+    "need_patient_banner": "false",
+    "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm9maWxlIjoiUGF0aWVudC84N2EzMzlkMC04Y2FlLTQxOGUtODljNy04NjUxZTZhYWIzYzYiLCJmaGlyVXNlciI6IlBhdGllbnQvODdhMzM5ZDAtOGNhZS00MThlLTg5YzctODY1MWU2YWFiM2M2IiwiYXVkIjoiQW55Iiwic3ViIjoiZjVhZWQwZTgyZmM0Y2ZkOTZkMDI3NmIwZjFiMjhiYTQxZmNhYjRhODU3MDY2ODhlODYzNTNlYzBhMjE0NzMwNSIsImlzcyI6Imh0dHBzOi8vbGF1bmNoLnNtYXJ0aGVhbHRoaXQub3JnL3YvcjQvZmhpciIsImlhdCI6MTYzNDI5MTk2NSwiZXhwIjoxNjM0Mjk1NTY1fQ.L9C0m34NVOmgEFpOsz3PGO3nzzZygBOvCroP2JOvnMLU88KgJ99y5EuvD7AZrqjwzWG2-4NpF8CJ-9FC8bBIw40o5-URyIk4XpYz8r5FNCf8DP8Oh9WUWHYjoJhYkIxplVdDZnTcCZC6k9-Ji2Dh7Sv_SJ-lk-d5C24V6YsgQT6vAJ5cwwvOiSXlh2D0xkFOGc2sYDwb3SWfLD704RxWBHzL_3whkdf7ETLekwY8ItB26sZzCKSd1K86kbcIW8_4k1xX0jLWd6sTT7Zgvo1a8AWayg3R2jJFfxJ3S4F6IzxvRhE38_n7jyx21DOoW1jwRwuNDkViGe7bRXpMUlAgWQ",
+    "smart_style_url": "https://launch.smarthealthit.org/smart-style.json",
+    "encounter": "418e38cf-9da6-4155-b205-0be24024b1db",
+    "client_id": "Any"
+  }
+}</pre>
+</div>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p>The module is launched from the <em>MyRecord</em> section of the menu in <em>MyChart</em>, or the partner&#8217;s custom patient portal (Step 1). The partner should be able to produce a valid launch ID that can be exchanged for an authorization code by the Epic Authz server. This exchange is initiated by the Ada-ID service (Steps 2, 3). The Tesseract API Gateway redirects to the Authz server (Step 4), which in turn redirects with the code and state parameters to the assessment module (Steps 5, 6). The assessment module sends the parameters to the Ada-ID service (Step 7) in order to obtain an internal JWS token (Step 14). The internal token is created based on the token response the Ada-ID retrieves from the API Gateway (Steps 8, 11), which obtains it from the Authz server (Steps 9, 10). The Ada-ID service performs additional checks on the token response that is retrieved, which involves inspecting the user database (Steps 12, 13).<br></p>
+</div>
+<div class="paragraph">
+<p>During the patient onboarding phase of the symptom assessment, the assessment module uses the internal token to obtain information about the patient&#8217;s demographics and associated risk factors from the Ada-ID service (Steps 15, 20). The Ada-ID service retrieves the data from the Epic FHIR server through the API gateway (Steps 16 - 19).<br></p>
+</div>
+<div class="sect3">
+<h4 id="_fhir_resources">2.1. FHIR resources</h4>
+<div class="paragraph">
+<p>The resources pulled from the FHIR server include the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Patient</code>: for obtaining the patient name, date of birth and gender</p>
+</li>
+<li>
+<p><code>Observation</code>: for obtaining the birth sex and smoking status</p>
+</li>
+<li>
+<p><code>Condition</code>: for obtaining active hypertension or diabetes diagnoses.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Biological sex is populated with the birth sex observation - in case it&#8217;s missing, the gender value is used.</p>
+</div>
+<div class="paragraph">
+<p>The user gets asked about any of the data missing from the <code>Patient</code> resource. If active hypertension or diabetes diagnoses cannot be found, the user will be asked if they exist.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_returning_users">2.2. Returning users</h4>
+<div class="paragraph">
+<p>Step 9 ensures that returning users are recognized. The assessment flow for returning users can be distinguished from the one for new users in that the returning users will not be asked to agree to the <em>Terms and Conditions and Privacy Policy</em> again.</p>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_integration_of_the_assessment_report_application_webview">Integration of the assessment report application (WebView)</h2>
+<h2 id="_integration_of_the_assessment_report_module_for_healthcare_professionals">3. Integration of the assessment report module for healthcare professionals</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>An overview of assessment report app integration can be seen in the following diagram:</p>
+<p>The protocol followed for the assessment report module integration (single sign-on) is SMART on FHIR with OpenID Connect. An overview of the integration can be seen in the following diagram:</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -629,14 +718,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="paragraph">
-<p>Upon launch, Hyperspace provides a launch ID, which is exchanged for the authorization code and state parameters by the Authz server through the Ada-ID service. The Authz server redirects with the code and state parameters to the report app which in turn sends the parameters to the Ada-ID app in order to obtain an internal JWS token. The Ada-ID app constructs the internal token based on the token response it gets from the Authz server. The internal token contents include the patient ID from the launch context and the expiration time. If the internal token is not past its expiry, the assessment report app displays reports for a particular patient, based on the token&#8217;s patient ID field.</p>
+<p>When the assessment report module is triggered inside the Hyperspace/Hyperdrive platform (Steps 1, 2), the Ada-ID service initiates an exchange of the launch ID for an authorization code (Step 3). The request for an authorization code is directed towards the Tesseract API Gateway which redirects to the Epic Authz server (Step 4). The Authz server redirects with the code and state parameters to the report service (Steps 5, 6) which in turn sends the parameters to the Ada-ID service in order to obtain an internal JWS token (Steps 7, 12). The Ada-ID service constructs the internal token based on the token response it gets from the API Gateway (Steps 8, 11), which obtains it from the Authz server (Steps 9, 10). The internal token contents include the patient ID from the launch context and the expiration time. If the internal token is not past its expiry (Steps 14, 15), the assessment report service displays reports for a particular patient (Steps 16), based on the token&#8217;s patient ID field.</p>
 </div>
-<div class="sect2">
-<h3 id="_assessment_report_webview_for_physicians">Assessment report WebView for physicians</h3>
 <div class="sect3">
-<h4 id="_dashboard_view">Dashboard view</h4>
+<h4 id="_dashboard_view">3.1. Dashboard view</h4>
 <div class="paragraph">
-<p>When a health-care professional launches the report app in Hyperspace from within the healthcare record context of a particular patient, the first screen they&#8217;re shown is the dashboard view - a full list of assessments the patient has carried out, along with the patient demographics, name and the patient ID. A sample dashboard view can be seen here:</p>
+<p>When a health-care professional launches the report module in Hyperspace/Hyperdrive from within the healthcare record context of a particular patient, the first screen they&#8217;re shown is the dashboard view - a full list of assessments the patient has carried out, along with the patient demographics, name and the patient ID. The list is ordered by the date and time of the assessments, with the latest one being first. Incomplete assessments and those the user did not explicitly share with their physician are neither shown nor saved in the system. A sample dashboard view can be seen here:</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -645,42 +732,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_report_view">Report view</h4>
+<h4 id="_report_view">3.2. Report view</h4>
 <div class="paragraph">
-<p>Clicking on one of the items in the report list leads to a view of the full assessment report, with the patient demographics, relevant risk factors, primary complaints, present and absent findings, suggested conditions and a transcript of the dialogue with Ada.</p>
+<p>Clicking on one of the items in the report list leads to a view of the full assessment report, with the patient demographics, relevant risk factors, primary complaints, present and absent findings, suggested conditions and a transcript of the dialogue with Ada. The following image shows a sample report:</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/report_view_1.png" alt="individual hcp report view part 1">
+<img src="images/report_view.png" alt="individual hcp report view">
 </div>
 </div>
 <hr>
-<div class="imageblock">
-<div class="content">
-<img src="images/report_view_2.png" alt="individual hcp report view part 2">
-</div>
-</div>
-<hr>
-<div class="imageblock">
-<div class="content">
-<img src="images/report_view_3.png" alt="individual hcp report view part 3">
-</div>
-</div>
-<hr>
-<div class="imageblock">
-<div class="content">
-<img src="images/report_view_4.png" alt="individual hcp report view part 4">
-</div>
-</div>
-<hr>
-<div class="imageblock">
-<div class="content">
-<img src="images/report_view_5.png" alt="individual hcp report view part 5">
-</div>
-</div>
 <div class="paragraph">
 <p>If you have any feedback or just want to get in touch, reach us at <a href="mailto:partnership@ada.com">partnership@ada.com</a>.</p>
-</div>
 </div>
 </div>
 </div>
@@ -689,7 +752,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="footer">
 <div id="footer-text">
 Version null<br>
-Last updated 2021-09-24 13:44:13 UTC
+Last updated 2021-10-20 12:27:48 UTC
 </div>
 </div>
 <div class="custom-footer">
