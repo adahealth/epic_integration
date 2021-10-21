@@ -577,7 +577,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Ada&#8217;s Epic integration</h1>
 <div class="details">
 <span id="author" class="author">&#169; Ada Health GmbH</span><br>
-<span id="revnumber">version chore-SID-718-doc</span>
+<span id="revnumber">version chore-rewrite-steps-in-bullet-points</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -667,11 +667,37 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 </details>
-<div class="paragraph">
-<p>The module is launched from the <em>MyRecord</em> section of the menu in <em>MyChart</em>, or the partner&#8217;s custom patient portal (Step 1). The partner should be able to produce a valid launch ID that can be exchanged for an authorization code by the Epic Authz server. This exchange is initiated by the Ada-ID service (Steps 2, 3). The Tesseract API Gateway redirects to the Authz server (Step 4), which in turn redirects with the code and state parameters to the assessment module (Steps 5, 6). The assessment module sends the parameters to the Ada-ID service (Step 7) in order to obtain an internal JWS token (Step 14). The internal token is created based on the token response the Ada-ID retrieves from the API Gateway (Steps 8, 11), which obtains it from the Authz server (Steps 9, 10). The Ada-ID service performs additional checks on the token response that is retrieved, which involves inspecting the user database (Steps 12, 13).<br></p>
-</div>
-<div class="paragraph">
-<p>During the patient onboarding phase of the symptom assessment, the assessment module uses the internal token to obtain information about the patient&#8217;s demographics and associated risk factors from the Ada-ID service (Steps 15, 20). The Ada-ID service retrieves the data from the Epic FHIR server through the API gateway (Steps 16 - 19).<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Step 1: The module is launched from the <em>MyRecord</em> section of the menu in <em>MyChart</em>, or the partner&#8217;s custom patient portal.
+Steps 2 and 3: The partner should be able to produce a valid launch ID that can be exchanged for an authorization code by the Epic Authz server. This exchange is initiated by the Ada-ID service.</p>
+</li>
+<li>
+<p>Steps 5 and 6: The Tesseract API Gateway redirects to the Authz server (Step 4), which in turn redirects with the code and state parameters to the assessment module.</p>
+</li>
+<li>
+<p>Step 7: The assessment module sends the parameters to the Ada-ID service</p>
+</li>
+<li>
+<p>Step 14: The Ada-ID service sends an internal JWS token.</p>
+</li>
+<li>
+<p>Steps 8 and 11: The internal token is created based on the token response the Ada-ID retrieves from the API Gateway.</p>
+</li>
+<li>
+<p>Steps 9 and 10: The API Gateway obtains the token response from the Authz server.</p>
+</li>
+<li>
+<p>Steps 12 and 13: The Ada-ID service performs additional checks on the token response that is retrieved, which involves inspecting the user database.</p>
+</li>
+<li>
+<p>Step 15 and 20: During the patient onboarding phase of the symptom assessment, the assessment module uses the internal token to obtain information about the patient&#8217;s demographics and associated risk factors from the Ada-ID service.</p>
+</li>
+<li>
+<p>Steps 16 to 19: The Ada-ID service retrieves the data from the Epic FHIR server through the API gateway.</p>
+</li>
+</ul>
 </div>
 <div class="sect3">
 <h4 id="_fhir_resources">2.1. FHIR resources</h4>
@@ -717,8 +743,36 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <img src="images/epic-hcp-client-facing-flow.png" alt="hcp epic sequence diagram">
 </div>
 </div>
-<div class="paragraph">
-<p>When the assessment report module is triggered inside the Hyperspace/Hyperdrive platform (Steps 1, 2), the Ada-ID service initiates an exchange of the launch ID for an authorization code (Step 3). The request for an authorization code is directed towards the Tesseract API Gateway which redirects to the Epic Authz server (Step 4). The Authz server redirects with the code and state parameters to the report service (Steps 5, 6) which in turn sends the parameters to the Ada-ID service in order to obtain an internal JWS token (Steps 7, 12). The Ada-ID service constructs the internal token based on the token response it gets from the API Gateway (Steps 8, 11), which obtains it from the Authz server (Steps 9, 10). The internal token contents include the patient ID from the launch context and the expiration time. If the internal token is not past its expiry (Steps 14, 15), the assessment report service displays reports for a particular patient (Steps 16), based on the token&#8217;s patient ID field.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Step 1 and 2: The assessment report module is triggered inside the Hyperspace/Hyperdrive platform.</p>
+</li>
+<li>
+<p>Step 3: The Ada-ID service initiates an exchange of the launch ID for an authorization code.</p>
+</li>
+<li>
+<p>Step 4: The request for an authorization code is directed towards the Tesseract API Gateway which redirects to the Epic Authz server.</p>
+</li>
+<li>
+<p>Steps 5 and 6: The Authz server redirects with the code and state parameters to the report service.</p>
+</li>
+<li>
+<p>Steps 7 and 12: The report service sends the parameters to the Ada-ID service in order to obtain an internal JWS token.</p>
+</li>
+<li>
+<p>Steps 8 and 11: The Ada-ID service constructs the internal token based on the token response it gets from the API Gateway.</p>
+</li>
+<li>
+<p>Steps 9 and 10: Obtains the token from the Authz server.</p>
+</li>
+<li>
+<p>Steps 14 and 15: The internal token contents include the patient ID from the launch context and the expiration time. If the internal token is not past its expiry .</p>
+</li>
+<li>
+<p>Step 16: The assessment report service displays reports for a particular patient, based on the token&#8217;s patient ID field.</p>
+</li>
+</ul>
 </div>
 <div class="sect3">
 <h4 id="_dashboard_view">3.1. Dashboard view</h4>
@@ -743,7 +797,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <hr>
 <div class="paragraph">
-<p>If you have any feedback or just want to get in touch, reach us at <a href="mailto:partnership@ada.com">partnership@ada.com</a>.</p>
+<p>If you have any feedback or just want to get in touch, reach us at <a href="mailto:partnerships@ada.com">partnerships@ada.com</a>.</p>
 </div>
 </div>
 </div>
@@ -751,8 +805,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Version chore-SID-718-doc<br>
-Last updated 2021-10-21 13:58:06 UTC
+Version chore-rewrite-steps-in-bullet-points<br>
+Last updated 2021-10-21 14:15:44 UTC
 </div>
 </div>
 <div class="custom-footer">
