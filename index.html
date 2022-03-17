@@ -593,6 +593,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_dashboard_view">3.1. Dashboard view</a></li>
 <li><a href="#_report_view">3.2. Report view</a></li>
+<li><a href="#_customization">3.3. Customization</a></li>
 </ul>
 </li>
 </ul>
@@ -670,20 +671,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="ulist">
 <ul>
 <li>
-<p>Step 1: The module is launched from the <em>MyRecord</em> section of the menu in <em>MyChart</em>, or the partner&#8217;s custom patient portal.
-Steps 2 and 3: The partner should be able to produce a valid launch ID that can be exchanged for an authorization code by the Epic Authz server. This exchange is initiated by the Ada-ID service.</p>
+<p>Steps 1 and 2: The module is launched from the <em>MyRecord</em> section of the menu in <em>MyChart</em>, or the partner&#8217;s custom patient portal.</p>
 </li>
 <li>
-<p>Steps 5 and 6: The Tesseract API Gateway redirects to the Authz server (Step 4), which in turn redirects with the code and state parameters to the assessment module.</p>
+<p>Step 3: The Ada-ID service initiates an exchange of the launch ID for an authorization code.</p>
 </li>
 <li>
-<p>Step 7: The assessment module sends the parameters to the Ada-ID service</p>
+<p>Steps 4 to 6: The Tesseract API Gateway redirects to the Authz server, which in turn redirects with the code and state parameters to the assessment module.</p>
 </li>
 <li>
-<p>Step 14: The Ada-ID service sends an internal JWS token.</p>
+<p>Steps 7 to 14: The assessment module sends the parameters to the Ada-ID service and the Ada-ID service returns an internal JWS token</p>
 </li>
 <li>
-<p>Steps 8 and 11: The internal token is created based on the token response the Ada-ID retrieves from the API Gateway.</p>
+<p>Steps 8 to 11: The internal token is created based on the token response Ada-ID retrieves from the Tesseract API.</p>
 </li>
 <li>
 <p>Steps 9 and 10: The API Gateway obtains the token response from the Authz server.</p>
@@ -692,7 +692,7 @@ Steps 2 and 3: The partner should be able to produce a valid launch ID that can 
 <p>Steps 12 and 13: The Ada-ID service performs additional checks on the token response that is retrieved, which involves inspecting the user database.</p>
 </li>
 <li>
-<p>Step 15 and 20: During the patient onboarding phase of the symptom assessment, the assessment module uses the internal token to obtain information about the patient&#8217;s demographics and associated risk factors from the Ada-ID service.</p>
+<p>Steps 15 to 20: During the patient onboarding phase of the symptom assessment, the assessment module uses the internal token to obtain information about the patient&#8217;s demographics and associated risk factors from the Ada-ID service.</p>
 </li>
 <li>
 <p>Steps 16 to 19: The Ada-ID service retrieves the data from the Epic FHIR server through the API gateway.</p>
@@ -736,7 +736,7 @@ Steps 2 and 3: The partner should be able to produce a valid launch ID that can 
 <h2 id="_integration_of_the_assessment_report_module_for_healthcare_professionals">3. Integration of the assessment report module for healthcare professionals</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The protocol followed for the assessment report module integration (single sign-on) is SMART on FHIR with OpenID Connect. An overview of the integration can be seen in the following diagram:</p>
+<p>The protocol followed for the assessment report module integration (single sign-on) is SMART on FHIR. An overview of the integration can be seen in the following diagram:</p>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -746,7 +746,7 @@ Steps 2 and 3: The partner should be able to produce a valid launch ID that can 
 <div class="ulist">
 <ul>
 <li>
-<p>Step 1 and 2: The assessment report module is triggered inside the Hyperspace/Hyperdrive platform.</p>
+<p>Steps 1 and 2: The assessment report module is triggered inside the Hyperspace/Hyperdrive platform.</p>
 </li>
 <li>
 <p>Step 3: The Ada-ID service initiates an exchange of the launch ID for an authorization code.</p>
@@ -758,19 +758,19 @@ Steps 2 and 3: The partner should be able to produce a valid launch ID that can 
 <p>Steps 5 and 6: The Authz server redirects with the code and state parameters to the report service.</p>
 </li>
 <li>
-<p>Steps 7 and 12: The report service sends the parameters to the Ada-ID service in order to obtain an internal JWS token.</p>
+<p>Steps 7 to 12: The report service sends the code and state parameters to the Ada-ID service in order to obtain an internal JWS token.</p>
 </li>
 <li>
-<p>Steps 8 and 11: The Ada-ID service constructs the internal token based on the token response it gets from the API Gateway.</p>
+<p>Steps 8 to 11: The Ada-ID service constructs the internal token based on the token response it gets from Epic.</p>
 </li>
 <li>
-<p>Steps 9 and 10: Obtains the token from the Authz server.</p>
+<p>Steps 9 and 10: The Tesseract API obtains the token response from the Authz server.</p>
 </li>
 <li>
-<p>Steps 14 and 15: The internal token contents include the patient ID from the launch context and the expiration time. If the internal token is not past its expiry .</p>
+<p>Steps 14 and 15: The internal token contents include the patient ID from the launch context and the expiration time and these fields get validated in a request to the Ada-ID service.</p>
 </li>
 <li>
-<p>Step 16: The assessment report service displays reports for a particular patient, based on the token&#8217;s patient ID field.</p>
+<p>Step 16: If the token is valid, the assessment report service displays reports for a particular patient, based on the token&#8217;s patient ID field.</p>
 </li>
 </ul>
 </div>
@@ -795,6 +795,12 @@ Steps 2 and 3: The partner should be able to produce a valid launch ID that can 
 <img src="images/report_view.png" alt="individual hcp report view">
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_customization">3.3. Customization</h4>
+<div class="paragraph">
+<p>The dashboard and report interfaces currently support only the English language (locale <code>en-GB</code>).</p>
+</div>
 <hr>
 <div class="paragraph">
 <p>If you have any feedback or just want to get in touch, reach us at <a href="mailto:partnerships@ada.com">partnerships@ada.com</a>.</p>
@@ -806,7 +812,7 @@ Steps 2 and 3: The partner should be able to produce a valid launch ID that can 
 <div id="footer">
 <div id="footer-text">
 Version experimental<br>
-Last updated 2022-03-01 15:04:02 UTC
+Last updated 2022-03-17 19:16:56 UTC
 </div>
 </div>
 <div class="custom-footer">
